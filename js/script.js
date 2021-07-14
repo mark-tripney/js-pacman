@@ -61,7 +61,7 @@ function createBoard() {
         squares[i].classList.add("ghost-lair");
         break;
       case 3:
-        squares[i].classList.add("power-pellet");
+        squares[i].classList.add("power-pill");
         break;
       case 4:
         squares[i].classList.add("empty");
@@ -125,6 +125,7 @@ function movePacman(e) {
       return;
   }
   squares[pacmanCurrentIndex].classList.add("pacman");
+  powerPillEaten();
   pacDotEaten();
 }
 
@@ -138,6 +139,19 @@ function pacDotEaten() {
   } else {
     scoreDisplay.textContent = score;
   }
+}
+
+function powerPillEaten() {
+  if (squares[pacmanCurrentIndex].classList.contains("power-pill")) {
+    score += 100;
+    squares[pacmanCurrentIndex].classList.remove("power-pill");
+    ghosts.forEach((ghost) => (ghost.isScared = true));
+    setTimeout(unScareGhosts, 10000);
+  }
+}
+
+function unScareGhosts() {
+  ghosts.forEach((ghost) => (ghost.isScared = false));
 }
 
 class Ghost {
