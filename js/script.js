@@ -196,7 +196,7 @@ function moveGhost(ghost) {
     ) {
       // Remove ghost.className and 'ghost' class
       squares[ghost.currentIndex].classList.remove(ghost.className);
-      squares[ghost.currentIndex].classList.remove("ghost");
+      squares[ghost.currentIndex].classList.remove("ghost", "scared-ghost");
       // Add direction to ghost.currentIndex
       ghost.currentIndex += randomDirection;
       // Re-apply ghost.className and 'ghost' class
@@ -206,5 +206,55 @@ function moveGhost(ghost) {
       randomDirection =
         directions[Math.floor(Math.random() * directions.length)];
     }
+    // Ghosts are scared...
+    if (ghost.isScared) {
+      squares[ghost.currentIndex].classList.add("scared-ghost");
+    }
+    // Pac-Man eats a scared ghost...
+    if (
+      ghost.isScared &&
+      squares[ghost.currentIndex].classList.contains("pacman")
+    ) {
+      // Remove classnames ghost.className, 'ghost', 'scared-ghost'
+      squares[ghost.currentIndex].classList.remove(
+        ghost.className,
+        "ghost",
+        "scared-ghost"
+      );
+      // Change ghosts currentIndex back to its startIndex
+      ghost.currentIndex = ghost.startIndex;
+      //add a score of 100
+      score += 100;
+      // Re-apply classnames of ghost.className and 'ghost'
+      squares[ghost.currentIndex].classList.add(ghost.className, "ghost");
+    }
+    checkForGameOver();
+    checkForWin();
   }, ghost.speed);
+}
+
+function checkForGameOver() {
+  // If Pac-Man's square contains a non-scared ghost...
+  if (
+    squares[pacmanCurrentIndex].classList.contains("ghost") &&
+    !squares[pacmanCurrentIndex].classList.contains("scared-ghost")
+  ) {
+    // Stop all ghosts moving...
+    ghosts.forEach((ghost) => clearInterval(ghost.timerId));
+    // Remove control event listener...
+    document.removeEventListener("keydown", movePacman);
+    // Tell user the game is over...
+    scoreDisplay.textContent = "GAME OVER!";
+  }
+}
+
+function checkForWin() {
+  if (score >= 2500) {
+    // Stop all ghosts moving...
+    ghosts.forEach((ghost) => clearInterval(ghost.timerId));
+    // Remove control event listener...
+    document.removeEventListener("keydown", movePacman);
+    // Tell user they've won...
+    scoreDisplay.textContent = "YOU WIN!";
+  }
 }
